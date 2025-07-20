@@ -1,0 +1,105 @@
+==== FOOD CHAIN: PROJECT BRIEF ====
+
+=== OVERVIEW ===
+
+Food Chain is a simulator that is loosely inspired by the evolution simulator featured on the YouTube channel 'Primer'. A video of Primer's simulation in action can be found here: https://youtu.be/0ZGbIKd0XrM
+
+Food Chain will not be nearly as complex, but the way the simulation is handled will be similar. The primary goal with this simulation is to have different organisms that must get their food from different sources. The player will be able to control key values such as spawn rates and energy consumption. While there is no way to 'win' the game, players will find it interesting to tweak the values and see how the outcome of the simulation is affected by changes.
+
+=== GENERAL GAMEPLAY NOTES ===
+
+=== DISTANCE AND SPEED ===
+
+Although there is distance between elements on the board, moving organisms will always reach their destination in sixty frames regardless of the distance traveled.
+
+A realistic simulation would take into account different speeds and some concept of 'foraging efficiency.' However, such concepts would require rather complex pathing and prioritization behavior that is out of the scope of this project, so distance is effectively meaningless in this simulation.
+
+An organism's movement speed is always equal to 'the distance to the target.' When multiplied by a Time.fixedDeltaTime that is equal to 1/60, this should result in all travel operations taking one second.
+
+=== PAUSING ===
+
+In order to run the simulation, the player will hold down the space bar. The simulation will tick away until the player lets go of the space bar. When this happens, the simulation will not pause immediately - it will wait until there are no in-progress feeding operations. To make it easy to detect whether feeding is happening, there will be an interface called ICanFeed attached to deer and wolves. All deer and wolves will be tracked in a List<ICanFeed> and then we can loop through each one asking for the value of the IsFeeding property.
+
+When the simulation detects no feeding happening, then it will pause. The passive energy drain on all animals will stop and they will not age, feed or reproduce until the player presses the space bar again.
+
+=== ORGANISMS ===
+
+== STATS ==
+
+= LIFESPAN =
+
+The player is able to set the amount of time each organism spends in its life phases, all measured in seconds (float).
+
+- Juvenile Phase
+- Mature Phase
+- Elder Phase
+
+= SPAWN RATE =
+
+For grass, this is the number of seconds that must pass before a new instance of grass can spawn anywhere on the board. Animals treat the number a little differently - instead of a global cooldown rate, each animal has its own coolown on reproduction.
+
+Animals must meet three conditions in order to reproduce:
+
+- the respawn cooldown timer is at 0
+- the animal is Mature
+- the animal has a minimum amount of energy, set by the player
+
+When the animal reproduces, it will lose a percentage of energy. This amount is also dictated by the player.
+
+= MINIMUM SPAWN ENERGY =
+
+See above.
+
+= SPAWN COST =
+
+See above.
+
+= ENERGY PER SECOND =
+
+A passive energy drain per second. If the animal reaches 0 energy, it will die of starvation.
+
+= FORAGING THRESHOLD =
+
+If the animal drops below this amount of energy, they will try to eat food every second until they find some.
+
+= ENERGY VALUE =
+
+When this organism is eaten, the organism that ate it will gain this much energy.
+
+== UNIQUE MECHANICS ==
+
+GRASS
+
+Grass is the most basic of the organisms. It does not move. Its spawn location is completely random, with the only limitation being that only one clump of grass may occupy a single grid cell. The only tweakable values associated with grass are 'spawn rate,' 'energy value' and the three lifespan values.
+
+DEER
+
+Deer move around and eat grass. Deer will prefer to eat mature grass, but will eat juvenile or elder grass if there is no mature grass available on the map. Grass that is not Mature is only worth 75% of the energy that it would normally give.
+
+WOLF
+
+Wolves move around and eat deer. Wolves will prefer to eat Elder deer, but if none are available, they will eat Mature deer. Wolves will only eat Juvenile deer as a last resort. (This is not realistic, but a realistic depiction would require that the adult deer are capable of protecting the juveniles. The complexity of a realistic 'battle system' is out of the scope of this project.)
+
+If the wolves have started eating juveniles, both animal species are probably very close to going extinct.
+
+
+==== OOP PILLARS INFORMATION ====
+=== ENCAPSULATION ===
+
+This pillar will be found in the form of the various stats on each organism. None of the stats can be negative. Organisms will be unaware of most of the stats on other organisms. At the time of this writing, I can only think of three stats that they actually need to be aware of: Life stage, position and energy value of their target.
+
+=== ABSTRACTION ===
+
+Abstraction will be found all over the project, so it is difficult to really give the most 'obvious' examples here (at least in the first writing of this document). Behavior such as energy consumption, aging and foraging will all be handled in discrete methods, and interfaces will be available where appropriate so that one organism can basically just say to another, 'I have eaten you; I don't care how you handle it, just hanlde it.' There will be very little code in each organism's Update() method.
+
+=== INHERITANCE ===
+
+All organisms will inherit from a base 'Organism' class. This class will hold the properties and methods that ALL organisms have, including things like 'juvenile phase length' and Reproduce().
+
+Grass will inherit directly from Organism, as its own functionality will not be much different. We could easily implement a Plant class for Grass and other plants to inherit from, but that's not necessary at this time.
+
+There will be an Animal class that inherits from Organism. The most important distinction that Animal has from Organism is that Animal has a 'food source' field. Deer and Wolf will then inherit from Animal. Deer will have 'Grass' as a food source and Wolf will have 'Deer' as a food source.
+
+=== POLYMORPHISM ===
+
+The main fundamental difference between deer and wolves is that they will have different preferences on the life-stage of their food source, so they will go about choosing their targets in a different way. Optionally, I may program deer to try to choose food sources that are as far away from wolves as possible. Although distance doesn't matter in this simulation, this would be a solid example of the Forage() method being significantly morphed. (Plus, it would look a little bit funny if all the deer were totally fine with walking right up to a wolf and eating next to it.)

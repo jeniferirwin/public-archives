@@ -1,0 +1,36 @@
+#alias {killall}
+{
+	#loop {1} {$mods[loaded]} {loop}
+	{
+		#var {classname} {$mods[reload][$loop]};
+		#class {$classname} {kill};
+	};
+	#unvar {mods};
+	#unvar {classname};
+	#unvar {loop};
+	#split 0 1;
+	#showme {};
+	#showme {};
+	#showme {};
+	#showme {};
+	#showme {<120>All modules killed. Type 'reload' to reload them.<070>}
+};
+
+#alias {reload}
+{
+	killall;
+	#script {mods[reload]} {ls modules/reload};
+	#list {mods[reload]} {size} {mods[loaded]};
+	#if {${mods[loaded]} > 0}
+	{
+		#loop 1 ${mods[loaded]} {idx}
+		{
+			#nop #showme {Killing class $mods[reload][$idx]...};
+			#class {$mods[reload][$idx]} {kill};
+			#class {$mods[reload][$idx]} {read} {modules/reload/$mods[reload][$idx]};
+		}
+	};
+    #unvar {idx};
+};
+
+reload

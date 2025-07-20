@@ -1,0 +1,25 @@
+#nop {
+    IMPORTANT! This file MUST be named such that it is the last file
+    that shows up in 'ls'! This file checks for the existence of other
+    loaded modules. Those modules must already be loaded before this
+    file is loaded, hence the 'zz' prefix on the filename.
+};
+#var {mods[filenames][update]} {zzupdate.tt}
+
+#unvar {update[hasTracker]};
+#list {mods[reload]} {find} {tracker.tt} {update[hasTracker]};
+
+#unvar {update[hasStatDiff]};
+#list {mods[reload]} {find} {statdiff.tt} {update[hasStatDiff]};
+
+#alias {update}
+{
+    #if {$update[hasStatDiff] != 0}
+    {
+        statdiffupdate;
+    };
+    #if {$update[hasTracker] != 0}
+    {
+        trackerupdate;
+    };
+}

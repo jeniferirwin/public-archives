@@ -1,0 +1,44 @@
+#var {mods[filenames][timesavers]} {timesavers.tt};
+
+#alias {djinn1}
+{
+  op west;
+  west;
+  get gold;
+  unlock north;
+  open north;
+  drop gold;
+  north;
+  enter box;
+  op north;
+  north;
+  op down;
+  down;
+  op north;
+  north;
+  get green word;
+  get green;
+  unlock north;
+  open north;
+  drop all.key;
+  north;
+  enter bottle
+}
+
+#alias {djinn2}
+{
+  d;
+  d;
+  d;
+  d;
+  d;
+  give 50 gold dj;
+  w;
+  buy fill;
+  e;
+  give fill dj;
+  e;
+  buy small;
+  w;
+  give small dj
+}

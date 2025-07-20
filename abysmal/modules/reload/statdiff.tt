@@ -1,0 +1,63 @@
+#unvar {statdiff};
+#var {mods[filenames][statdiff]} {statdiff.tt};
+#var {statdiff[hp][previous]} {0};
+#var {statdiff[mana][previous]} {0};
+#var {statdiff[move][previous]} {0};
+
+#alias {statdiffupdate}
+{
+    #class {$mods[filenames][statdiff]} {open};
+    #if {$statdiff[hp][current] != 0}
+    {
+        #var {statdiff[hp][previous]} {$statdiff[hp][current]};
+    };
+    #if {$statdiff[mana][current] != 0}
+    {
+        #var {statdiff[mana][previous]} {$statdiff[mana][current]};
+    };
+    #if {$statdiff[move][current] != 0}
+    {
+        #var {statdiff[move][previous]} {$statdiff[move][current]};
+    };
+    
+    #var {statdiff[hp][current]} {$prompt[raw][hpcur]};
+    #var {statdiff[mana][current]} {$prompt[raw][manacur]};
+    #var {statdiff[move][current]} {$prompt[raw][movecur]};
+    
+    #math {statdiff[hp][diff]} {$statdiff[hp][current] - $statdiff[hp][previous]};
+    #math {statdiff[mana][diff]} {$statdiff[mana][current] - $statdiff[mana][previous]};
+    #math {statdiff[move][diff]} {$statdiff[move][current] - $statdiff[move][previous]};
+    
+    #var {statdiff[string]} {};
+    #if {$statdiff[hp][diff] > 0}
+    {
+        #var {statdiff[string]} {<110>HP +$statdiff[hp][diff]<000>};
+    };
+    #if {$statdiff[hp][diff] < 0}
+    {
+        #var {statdiff[string]} {<050>HP $statdiff[hp][diff]<000> };
+    };
+    #if {$statdiff[mana][diff] > 0}
+    {
+        #var {statdiff[string]} {$statdiff[string] <120>MN +${statdiff[mana][diff]}<000> };
+    };
+    #if {$statdiff[mana][diff] < 0}
+    {
+        #var {statdiff[string]} {$statdiff[string] <030>MN ${statdiff[mana][diff]}<000> };
+    };
+    #if {$statdiff[move][diff] > 0}
+    {
+        #var {statdiff[string]} {$statdiff[string] <140>MV +${statdiff[move][diff]}<000> };
+    };
+    #if {$statdiff[move][diff] < 0}
+    {
+        #var {statdiff[string]} {$statdiff[string] <060>MV ${statdiff[move][diff]}<000> };
+    };
+    #if {"$statdiff[string]" != ""}
+    {
+        #format {statdiff[string]} {%p} {$statdiff[string]};
+        #var {statdiff[string]} {<020>[$statdiff[string]<020>]<000>};
+        #showme {$statdiff[string]};
+    };
+    #class {$mods[filenames][statdiff]} {close};
+}

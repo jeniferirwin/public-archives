@@ -1,0 +1,62 @@
+#action {Gamblius the swift says 'Sorry! Try again!'}
+{
+    gamble
+}
+
+#action {Gamblius the swift says 'A pittance for your time. Come again!'}
+{
+    gamble
+}
+
+#action {Gamblius the swift says 'You break even! Play again!'}
+{
+    gamble
+}
+
+#action {Gamblius the swift says 'That's gotta hurt! Try again!'}
+{
+    #var {gambling[healing]} {1};
+    ll;
+}
+
+#action {You lost your concentration.|You feel better!}
+{
+    #if {$prompt[raw][hpcur] < $prompt[raw][hpmax]}
+    {
+        #if {$gambling[healing] == 1}
+        {
+            ll
+        };
+    }
+    {
+        #var {gambling[healing]} {0};
+        #showme {do gamble here};
+    }
+}
+
+#action {Gamblius the swift says 'Here's a door prize! Play again!'}
+{
+    gamble
+}
+
+#action {Gamblius the swift says 'We have a winner!'}
+{
+    gamble
+}
+#action {Gamblius the swift says 'We have a winner! Use that for bigger prizes!'}
+{
+    gamble
+}
+#action {Gamblius the swift says 'We have a big winner! Thanks for playing!'}
+{
+    gamble
+}
+#action {You are already fully healed!} {gamble}
+#gag {Click}
+#gag {The wheel slows down.}
+#gag {The wheel stops.}
+#gag {The wheel starts to spin.}
+#alias {gamble}
+{
+    give 25 gold gamblius
+}

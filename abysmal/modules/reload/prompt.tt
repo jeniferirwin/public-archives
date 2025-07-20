@@ -1,0 +1,183 @@
+#var {mods[filenames][prompt]} {prompt.tt}
+
+#var {prompt[colors][tt][r]}  {010}
+#var {prompt[colors][tt][br]} {110}
+#var {prompt[colors][tt][g]}  {020}
+#var {prompt[colors][tt][bg]} {120}
+#var {prompt[colors][tt][y]}  {030}
+#var {prompt[colors][tt][by]} {130}
+#var {prompt[colors][tt][b]}  {040}
+#var {prompt[colors][tt][bb]} {140}
+#var {prompt[colors][tt][m]}  {050}
+#var {prompt[colors][tt][bm]} {150}
+#var {prompt[colors][tt][c]}  {060}
+#var {prompt[colors][tt][bc]} {160}
+#var {prompt[colors][tt][w]}  {070}
+#var {prompt[colors][tt][bw]} {170}
+
+#var {prompt[config][inbracket][width]} {13}
+#var {prompt[config][inbracket][roomwidth]} {61}
+#var {prompt[config][center]} {0}
+
+#unsplit
+#split 0 3
+#showme {} {-2}
+#showme {} {-3}
+#showme {} {-4}
+#showme {<${prompt[colors][tt][g]}>***************************** <${prompt[colors][tt][bg]}>TeviPrompt loaded! <${prompt[colors][tt][g]}>******************************}
+#showme {If you want the position, exit and room fields centered, type '<${prompt[colors][tt][bc]}>centerprompt<${prompt[colors][tt][w]}>'.}
+#showme {<${prompt[colors][tt][by]}>WARNING:<${prompt[colors][tt][w]}> Using centered fields may slow down tintin++, but looks pretty and}
+#showme {         may soothe you if you're picky about that kind of thing.}
+#showme {<${prompt[colors][tt][g]}>*******************************************************************************}
+
+#alias {centerprompt}
+{
+  #class {$mods[filenames][prompt]} {open};
+  #if {${prompt[config][center]} == 0}
+  {
+    #showme {<${prompt[colors][tt][g]}>** Position, room and exit fields will now be centered.};
+    #showme {<${prompt[colors][tt][g]}>** If you find the lag excessive, type 'centerprompt' again to toggle this off.};
+    #class {$mods[filenames][prompt]} {open};
+    #var {prompt[config][center]} {1};
+    #class {$mods[filenames][prompt]} {close};
+  }
+  {
+    #showme {<${prompt[colors][tt][g]}>** No longer centering position, room and exit fields.};
+    #class {$mods[filenames][prompt]} {open};
+    #var {prompt[config][center]} {0};
+    #class {$mods[filenames][prompt]} {close};
+  };
+  #class {$mods[filenames][prompt]} {close};
+}
+
+#var {prompt[setting]} {0}
+#gag {^[PROMPT->>}
+#gag {^[AFK] [PROMPT->>}
+#gag {Prompt set to:}
+
+#alias {setprompt}
+{
+  #class {$mods[filenames][prompt]} {open};
+  #var {prompt[setting]} {1};
+  #send {prompt [PROMPT->>|%h|%H|%m|%M|%v|%V|%X|%g|%s|%F|%f|%d|%i|%I|%w|%W|%a|%A|%q|%r|%e|%P%c};
+  #send {prompt afk [PROMPT->>|%h|%H|%m|%M|%v|%V|%X|%g|%s|%F|%f|%d|%i|%I|%w|%W|%a|%A|%q|%r|%e|%P%c};
+  #showme {<${prompt[colors][tt][g]}>Prompt has been set.};
+  #class {$mods[filenames][prompt]} {close};
+}
+
+#function {func_strlen}
+{
+  #class {$mods[filenames][prompt]} {open};
+  #list {prompt[temp][tokenized]} {tokenize} {%1};
+  #list {prompt[temp][tokenized]} {size} {result};
+  #class {$mods[filenames][prompt]} {close};
+}
+
+#function {centertext}
+{
+  #class {$mods[filenames][prompt]} {open};
+  #format {prompt[temp][textToCenter]} {%p} {%1};
+  #var {prompt[temp][textTargetLength]} {%2};
+  #var {prompt[temp][textCurrentLength]} {@func_strlen{${prompt[temp][textToCenter]}}};
+  #math {prompt[temp][iterations]} {$prompt[temp][textTargetLength] - $prompt[temp][textCurrentLength]};
+  #var {side} {0};
+
+  #if {$prompt[temp][textCurrentLength] < $prompt[temp][textTargetLength]}
+  {
+    #while {$prompt[temp][iterations] > 0}
+    {
+      #if {${side} == 0}
+      {
+        #var {prompt[temp][textToCenter]} {${prompt[temp][textToCenter]} };
+        #var {side} {1}
+      }
+      {
+        #var {prompt[temp][textToCenter]}  { ${prompt[temp][textToCenter]}};
+        #var {side} {0}
+      };
+      #math {prompt[temp][iterations]} {$prompt[temp][iterations] - 1};
+    }
+  };
+  #unvar {side};
+  #class {$mods[filenames][prompt]} {close};
+  #return ${prompt[temp][textToCenter]}
+}
+
+#action {[PROMPT->>|%1|%2|%3|%4|%5|%6|%7|%8|%9|%10|%11|%12|%13|%14|%15|%16|%17|%18|%19|%20|%21|%22}
+{
+    #class {$mods[filenames][prompt]} {open};
+    #var {prompt[raw][hpcur]}     {%1};
+    #var {prompt[raw][hpmax]}     {%2};
+    #var {prompt[raw][manacur]}   {%3};
+    #var {prompt[raw][manamax]}   {%4};
+    #var {prompt[raw][movecur]}   {%5};
+    #var {prompt[raw][movemax]}   {%6};
+    #var {prompt[raw][tnl]}       {%7};
+    #var {prompt[raw][gold]}      {%8};
+    #var {prompt[raw][silver]}    {%9};
+    #var {prompt[raw][full]}      {%10};
+    #var {prompt[raw][hunger]}    {%11};
+    #var {prompt[raw][thirst]}    {%12};
+    #var {prompt[raw][itemcur]}   {%13};
+    #var {prompt[raw][itemmax]}   {%14};
+    #var {prompt[raw][weightcur]} {%15};
+    #var {prompt[raw][weightmax]} {%16};
+    #var {prompt[raw][aligncur]}  {%17};
+    #var {prompt[raw][alignmax]}  {%18};
+    #var {prompt[raw][qp]}        {%19};
+    #var {prompt[raw][room]}      {%20};
+    #var {prompt[raw][exits]}     {%21};
+    #var {prompt[raw][position]}  {%22};
+    formatfields;
+    updatestatus;
+    #nop {
+      The 'update' alias is found in zzupdate.tt. Scripts like statdiff
+      and tracker use the prompt as an 'anchor' for knowing when they
+      need to update something.
+
+      Any other script that is designed to anchor to the prompt like
+      this should be called in zzupdate.tt.
+    };
+    update;
+    #class {$mods[filenames][prompt]} {close};
+};
+
+#alias {formatfields}
+{
+  #class {$mods[filenames][prompt]} {open};
+	#format {prompt[formatted][hp]}       {<${prompt[colors][tt][br]}>[<${prompt[colors][tt][r]}>%+5s<${prompt[colors][tt][br]}>/%-5shp]} {${prompt[raw][hpcur]}} {${prompt[raw][hpmax]}};
+	#format {prompt[formatted][mana]}     {<${prompt[colors][tt][g]}>[<${prompt[colors][tt][g]}>%+5s<${prompt[colors][tt][g]}>/%-5smn]} {${prompt[raw][manacur]}} {${prompt[raw][manamax]}};
+	#format {prompt[formatted][move]}     {<${prompt[colors][tt][bb]}>[<${prompt[colors][tt][b]}>%+5s<${prompt[colors][tt][bb]}>/%-5smv]} {${prompt[raw][movecur]}} {${prompt[raw][movemax]}};
+	#format {prompt[formatted][coins]}    {<${prompt[colors][tt][by]}>[%+5sg <${prompt[colors][tt][bw]}>%+5ss<${prompt[colors][tt][by]}>]} {${prompt[raw][gold]}} {${prompt[raw][silver]}};
+	#format {prompt[formatted][items]}    {<${prompt[colors][tt][bc]}>[<${prompt[colors][tt][c]}>%+5s<${prompt[colors][tt][bc]}>/%-5sit]} {${prompt[raw][itemcur]}} {${prompt[raw][itemmax]}};
+	#format {prompt[formatted][weight]}   {<${prompt[colors][tt][g]}>[<${prompt[colors][tt][g]}>%+5s<${prompt[colors][tt][g]}>/%-5swt]} {${prompt[raw][weightcur]}} {${prompt[raw][weightmax]}};
+	#format {prompt[formatted][food]}     {<${prompt[colors][tt][by]}>[ <${prompt[colors][tt][g]}>%+2sh <${prompt[colors][tt][bc]}>%+2st <${prompt[colors][tt][by]}>%+2sf ]<${prompt[colors][tt][w]}>} {${prompt[raw][hunger]}} {${prompt[raw][thirst]}} {${prompt[raw][full]}};
+	#format {prompt[formatted][align]}    {<${prompt[colors][tt][by]}>[<${prompt[colors][tt][y]}>%+5s<${prompt[colors][tt][by]}>/%-5sal<${prompt[colors][tt][by]}>]} {${prompt[raw][aligncur]}} {${prompt[raw][alignmax]}};
+	#format {prompt[formatted][info]}     {<${prompt[colors][tt][by]}>[%+5sq <${prompt[colors][tt][bc]}>%+5sx<${prompt[colors][tt][by]}>]} {${prompt[raw][qp]}} {${prompt[raw][tnl]}};
+
+  #if {${prompt[config][center]} == 1}
+  {
+    #var {prompt[temp][roomCentered]} {@centertext{${prompt[raw][room]};${prompt[config][inbracket][roomwidth]}}};
+    #var {prompt[temp][exitsCentered]} {@centertext{${prompt[raw][exits]};${prompt[config][inbracket][width]}}};
+    #var {prompt[temp][positionCentered]} {@centertext{${prompt[raw][position]};${prompt[config][inbracket][width]}}};
+    #format {prompt[formatted][position]} {<${prompt[colors][tt][g]}>[<${prompt[colors][tt][g]}>%s<${prompt[colors][tt][g]}>]} {${prompt[temp][positionCentered]}};
+    #format {prompt[formatted][exits]}    {<${prompt[colors][tt][bm]}>[<${prompt[colors][tt][m]}>%s<${prompt[colors][tt][bm]}>]} {${prompt[temp][exitsCentered]}};
+    #format {prompt[formatted][room]}     {<${prompt[colors][tt][bw]}>[<${prompt[colors][tt][w]}>%s<${prompt[colors][tt][bw]}>]<${prompt[colors][tt][w]}>} {${prompt[temp][roomCentered]}};
+    #unvar {prompt[temp]};
+    #unvar {result}
+  }
+  {
+  #format {prompt[formatted][position]} {<${prompt[colors][tt][g]}>[<${prompt[colors][tt][g]}>%-13s<${prompt[colors][tt][g]}>]} {${prompt[raw][position]}};
+  #format {prompt[formatted][exits]}    {<${prompt[colors][tt][bm]}>[<${prompt[colors][tt][m]}>%-13s<${prompt[colors][tt][bm]}>]} {${prompt[raw][exits]}};
+  #format {prompt[formatted][room]}     {<${prompt[colors][tt][bw]}>[<${prompt[colors][tt][w]}>%-61s<${prompt[colors][tt][bw]}>]<${prompt[colors][tt][w]}>} {${prompt[raw][room]}}
+  };
+  #class {$mods[filenames][prompt]} {close};
+}
+
+#alias {updatestatus}
+{
+	#showme {${prompt[formatted][hp]} ${prompt[formatted][mana]} ${prompt[formatted][move]} ${prompt[formatted][food]} ${prompt[formatted][position]}} {-4};
+	#showme {${prompt[formatted][coins]} ${prompt[formatted][items]} ${prompt[formatted][weight]} ${prompt[formatted][align]} ${prompt[formatted][info]}} {-3};
+	#showme {${prompt[formatted][exits]} ${prompt[formatted][room]}} {-2};
+  #unvar {prompt[formatted]};
+}

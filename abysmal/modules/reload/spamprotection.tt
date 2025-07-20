@@ -1,0 +1,107 @@
+#NOP {
+  If we see the same command entered 15 times, send a random
+  string to the MUD. This does fire on speedwalks but it's
+  never been a problem. Prevents the "KEEP A LID ON IT" spamkick
+  from happening.
+
+  Note that this is sometimes a bad thing when developing new
+  scripts and dealing with malfunctions. If you're stuck in a
+  loop and spam protection is allowing an infinite loop to just
+  keep going, type #KILL to instantly wipe out all scripts.
+};
+
+#var {mods[filenames][spamprotection]} {spamprotection.tt};
+
+#var {spam[amount]} {0}
+#var {spam[command]} {null}
+
+#event {SEND OUTPUT}
+{
+  #class {$mods[filenames][spamprotection]} {open};
+  #if {"%0" == "$spam[command]"}
+  {
+    #math {spam[amount]} {$spam[amount] + 1};
+    #if {$spam[amount] >= 15}
+    {
+      #showme {<060>[spam protection fired]<000>};
+      @keepaliveCommand{};
+      #var {spam[amount]} {1}
+    }
+  }
+  {
+    #var {spam[command]} {%0};
+    #var {spam[amount]} {1}
+  };
+  #class {$mods[filenames][spamprotection]} {close};
+}
+
+#function {keepaliveCommand}
+{
+  #class {$mods[filenames][spamprotection]} {open};
+  #var {spam[string]} {};
+  #loop {1} {20} {loop}
+  {
+    #var {spam[string]} {$spam[string]@randomAlphanumeric{}};
+  };
+  #class {$mods[filenames][spamprotection]} {close};
+  #return $spam[string];
+}
+
+#function {randomAlphanumeric}
+{
+  #switch {1d2}
+  {
+    #case {1} {#return @randomNumber{}};
+    #case {2} {#return @randomLetter{}};
+  }
+}
+
+#function {randomNumber}
+{
+  #switch {1d10}
+  {
+    #case {1} {#return 1};
+    #case {2} {#return 2};
+    #case {3} {#return 3};
+    #case {4} {#return 4};
+    #case {5} {#return 5};
+    #case {6} {#return 6};
+    #case {7} {#return 7};
+    #case {8} {#return 8};
+    #case {9} {#return 9};
+    #case {0} {#return 10};
+  }
+}
+
+#function {randomLetter}
+{
+  #switch {1d26}
+  {
+    #case {1} {#return a};
+    #case {2} {#return b};
+    #case {3} {#return c};
+    #case {4} {#return d};
+    #case {5} {#return e};
+    #case {6} {#return f};
+    #case {7} {#return g};
+    #case {8} {#return h};
+    #case {9} {#return i};
+    #case {10} {#return j};
+    #case {11} {#return k};
+    #case {12} {#return l};
+    #case {13} {#return m};
+    #case {14} {#return n};
+    #case {15} {#return o};
+    #case {16} {#return p};
+    #case {17} {#return q};
+    #case {18} {#return r};
+    #case {19} {#return s};
+    #case {20} {#return t};
+    #case {21} {#return u};
+    #case {22} {#return v};
+    #case {23} {#return w};
+    #case {24} {#return x};
+    #case {25} {#return y};
+    #case {26} {#return z};
+  }
+}

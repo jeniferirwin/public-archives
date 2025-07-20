@@ -1,0 +1,68 @@
+[gd_scene load_steps=6 format=3 uid="uid://moks6ai4w5fc"]
+
+[ext_resource type="Script" uid="uid://c5r0oh341sq78" path="res://Scripts/game_manager.gd" id="1_oj352"]
+[ext_resource type="Script" uid="uid://q712hmlb3fyw" path="res://Scripts/audio_manager.gd" id="2_fgdfb"]
+[ext_resource type="PackedScene" uid="uid://j6m65dslurt8" path="res://Scenes/main.tscn" id="2_mmt5l"]
+[ext_resource type="PackedScene" uid="uid://dky0fpjw44wmo" path="res://Scenes/win_scene.tscn" id="4_mmt5l"]
+[ext_resource type="PackedScene" uid="uid://4snn3qmuhefl" path="res://Scenes/main_menu.tscn" id="4_yqty0"]
+
+[node name="GameManager" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1600.0
+offset_bottom = -900.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_oj352")
+
+[node name="AudioManager" type="AudioStreamPlayer" parent="."]
+max_polyphony = 5
+script = ExtResource("2_fgdfb")
+
+[node name="MainMenu" parent="." instance=ExtResource("4_yqty0")]
+layout_mode = 1
+offset_top = -2.0
+offset_bottom = -2.0
+
+[node name="Instructions" parent="MainMenu" index="0"]
+text = "Demo Game
+WASD to scroll the camera
+Mouse over resources and click or space to harvest them (you can hold the button and just flail around)
+Right click on built structures to demolish it (no real reason for this, but you can)
+H - builds house (requires 5 wood)
+F - builds forge (requires 10 stone)
+T - builds tools (requires min 1 stone and 1 house - builds as many tools as possible per activation)
+U - builds statue (requires 20 bars)
+
+For every house you have, 1 meat will be consumed every 2 seconds.
+1 wood + 1 iron = 1 bar every 2 sec, as long as at least 1 house and 1 forge are present.
+For every additional house + forge combo you have, 1 more bar will be smelted
+per tick, as long as materials are available.
+
+For example, 34 houses and 86 forges can smelt up to 34 bars per tick, given materials.
+86 houses and 86 forges would smelt up to 86 bars per tick.
+
+Houses and tools collectively grant 'harvest power' which makes you harvest more from nodes. As with
+smelting, this is capped with the lower of the two values. 500 tools and 20 houses will only do the work
+of 20 tools and 20 houses.
+
+Build 10 statues to win!
+
+F1 for 'debug win'
+F3 for 'debug give resources'"
+
+[node name="Game" parent="." instance=ExtResource("2_mmt5l")]
+visible = false
+
+[node name="WinScene" parent="." instance=ExtResource("4_mmt5l")]
+visible = false
+layout_mode = 1
+offset_left = 6.0
+offset_top = 2.0
+offset_right = 6.0
+offset_bottom = 2.0
+
+[editable path="MainMenu"]
+[editable path="Game"]

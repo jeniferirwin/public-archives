@@ -1,0 +1,16 @@
+#script {login[char]} {echo $TTCHAR}
+#script {login[pass]} {echo $TTPASS}
+#script {login[sess]} {echo $TTSESS}
+#script {login[site]} {echo $TTSITE}
+#script {login[port]} {echo $TTPORT}
+
+#session {$login[sess][1]} {$login[site][1]} {$login[port][1]};
+#config {log} {raw};
+#format {logtime} {%t} {%Y-%m-%d-%H-%m-%S}
+#var {loginfo} {$login[sess][1]-$login[char][1]};
+#log {append} {logs/$logtime-$loginfo.raw};
+#unvar {logtime};
+#send {$login[char][1]}
+#send {$login[pass][1]}
+#unvar {login};
+#read {core.tt};

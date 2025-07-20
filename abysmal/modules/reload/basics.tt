@@ -1,0 +1,184 @@
+#var {mods[filenames][basics]} {basics.tt};
+
+
+#MACRO {\eOQ} {mow}
+#MACRO {\eOR} {kick}
+#MACRO {\eOS} {c 'dispel magic'}
+#MACRO {\eOl} {hh}
+#MACRO {\eOp} {oall;exit;scan}
+#MACRO {\eOq} {bash}
+#MACRO {\eOr} {s}
+#MACRO {\eOt} {w}
+#MACRO {\eOu} {look}
+#MACRO {\eOv} {e}
+#MACRO {\eOw} {flee}
+#MACRO {\eOx} {n}
+#MACRO {\eOs} {d}
+#MACRO {\eOy} {u}
+#MACRO {\eOn} {scan;exit}
+
+#var {basics[convert]} {0};
+
+#nop {
+  meta
+  
+  Allows for viewing of raw text, so that we can copy-paste it
+  and create ANSI-sensitive actions. This is a toggle.
+};
+
+#alias {meta}
+{
+  #class {$mods[filenames][basics]} {open};
+  #if {$basics[convert] == 0}
+  {
+    #config {convert meta} {on};
+    #var {basics[convert]} {1};
+  }
+  {
+    #config {convert meta} {off};
+    #var {basics[convert]} {0};
+  };
+  #class {$mods[filenames][basics]} {close};
+}
+
+#nop {
+  Assorted QoL stuff. Healing, rewielding, bag
+  keywords, etc.
+  
+  Note that this is pretty aggressive about bags.
+  This code makes it kind of hard to work with
+  bags that are just in your inventory or in the
+  room. I prefer it this way myself because it
+  gives me peace of mind about not losing stuff.
+
+  Remove the two aliases below to stop the
+  aggressive behavior.
+};
+
+#alias {get %1 bag} {#send {get %1 $basics[bag]}};
+#alias {put %1 bag} {#send {put %1 $basics[bag]}};
+
+#var {basics[bag]} {bag eq}
+#var {basics[healpot]} {'black potion'}
+#var {basics[disarmed]} {0}
+
+#alias {hh}
+{
+  get ${basics[healpot]} ${basics[bag]};
+  quaff ${basics[healpot]}
+}
+
+#alias {cc %1}
+{
+  c 'cure critical' %1
+}
+
+#alias {cc}
+{
+  c 'cure critical'
+}
+
+#alias {oall}
+{
+  open north;
+  open east;
+  open south;
+  open west;
+  open up;
+  open down
+}
+
+#alias {os %1}
+{
+  order all %1
+}
+
+#action {^You wield %1.$}
+{
+  #var {basics[disarmed]} {0}
+}
+
+#alias {wield %1}
+{
+  #class {$mods[filenames][basics]} {open};
+  #showme {Setting primary weapon to %1.};
+  #var {basics[primary]} {%1};
+  #send {wield %1};
+  #class {$mods[filenames][basics]} {close};
+}
+
+#alias {rewield}
+{
+  #class {$mods[filenames][basics]} {open};
+  #if {${basics[disarmed]} == 1}
+  {
+    #var {basics[disarmed]} {1};
+    #send {get ${basics[primary]}};
+    #send {wield ${basics[primary]}}
+  };
+  #class {$mods[filenames][basics]} {close};
+}
+
+#action {%1 DISARMS you and sends your primary weapon flying!$}
+{
+  #class {$mods[filenames][basics]} {open};
+  #var {basics[disarmed]} {1};
+  rewield;
+  #class {$mods[filenames][basics]} {close};
+}
+
+#action {^The smoke leaves your eyes.$} {rewield}
+#action {^Your vision returns.$} {rewield}
+#action {^You are no longer blinded.$} {rewield}
+#action {^You rub the dirt out of your eyes.$} {rewield}
+
+#action {Dahnigal hands you a quest note.}
+{
+  read note
+}
+
+#action {A warm glow passes through you.}
+{
+  #class {$mods[filenames][basics]} {open};
+  #math {manadeficit} {$prompt[raw][manamax] - $prompt[raw][manacur]};
+  #if {$manadeficit > 50}
+  {
+    #send {heal mana}
+  };
+  #class {$mods[filenames][basics]} {close};
+}
+
+#action {^Your quarry is %1 from here.$} {%1};
+
+#nop {
+  Helper functions.
+};
+
+#function {strlen}
+{
+  #nop {codes is the number of color codes in the string};
+  #local {string} {%1};
+  #local {codes} {%2};
+  #var {result} {0};
+  #local {char} {};
+  #parse {$string} {char} {#math {result} {$result + 1}};
+  #math {result} {$result - ($codes * 5)};
+  #return {$result};
+}
+
+#function {pad}
+{
+  #local {padto} {%1};
+  #local {string} {%2};
+  #local {codes} {%3};
+  #local {len} {@strlen{{$string}{$codes}}};
+  #local {diff} {};
+  #local {loop} {};
+  #math {diff} {$padto - $len};
+  #loop {1} {$diff} {loop}
+  {
+    #cat {string} { };
+  };
+  #var {result} {$string};
+  #return {$result};
+}

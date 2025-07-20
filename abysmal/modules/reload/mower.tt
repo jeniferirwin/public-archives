@@ -1,0 +1,80 @@
+#NOP {
+	This is a fun one. Allows for semi-automatic 'mowing' of a room by
+	gathering a list of mob keywords. Doesn't work on every mob. But
+	MOST mobs will have their keyword in a predictable place in the
+	output of 'scan.'
+
+	For example, when you see 'A duergar, right here' in the scan output,
+	the word 'duergar' is grabbed. If there's also a floating eye in the
+	room, the word 'eye' will be grabbed. These are put in a list. Then,
+	when the alias 'mow' is activated, you'll attack the first keyword
+	in the list. That keyword is automatically popped off when you start
+	combat.
+
+	As mobs die, you pop more keywords off the stack by invoking 'mow'
+	again. It would be entirely possible to completely automate the mower
+	by triggering on the phrase 'is DEAD' but I figured that going that
+	far in something I was using on my actual morts was a bit much. Plus,
+	there are times that you definitely don't want to attack mobs *totally*
+	indiscriminately, like when something higher level that you don't want
+	to waste time on happens to be in the room.
+};
+
+#var {mods[filenames][mower]} {mower.tt};
+#list {mower[scanned]} {create} {};
+
+#action {They aren't here.}
+{
+  #send {scan}
+};
+
+#alias {mow}
+{
+	#class {$mods[filenames][mower]} {open};
+	#list {mower[scanned]} {size} {mower[num]};
+	#if {$mower[num] == 0}
+	{
+	  #send {scan}
+	}
+	{
+	  #list {mower[scanned]} {get} {1} {mower[target]};
+	  #send {k $mower[target]};
+	  #list {mower[scanned]} {delete} {1};
+	};
+	#class {$mods[filenames][mower]} {close};
+}
+
+#action {Looking around you see:}
+{
+	#class {$mods[filenames][mower]} {open};
+	#list {mower[scanned]} {clear};
+	#action {%%1, right here.}
+	{
+		#list {mower[scanned]} {add} {@getMobKeyword{%%1}};
+	};
+	#class {$mods[filenames][mower]} {close};
+}
+
+#function getMobKeyword
+{
+	#class {$mods[filenames][mower]} {open};
+	#format {mobKeyword} {%r} {%1};
+	#var {finalKeyword} {};
+	#var {continue} {1};
+	#parse {$mobKeyword} {char}
+	{
+		#if {$continue == 1}
+		{
+			#if {"$char" != " "}
+			{
+				#var {finalKeyword} {$finalKeyword$char};
+			}
+			{
+				#var {continue} {0};
+			}
+		}
+	};
+	#format {mobKeyword} {%r} {$finalKeyword};
+	#return {$mobKeyword};
+	#class {$mods[filenames][mower]} {close};
+}

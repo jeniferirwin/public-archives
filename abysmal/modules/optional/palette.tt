@@ -1,0 +1,20 @@
+#var {mods[filenames][palette]} {palette.tt};
+#var {levels} {a;b;c;d;e;f}
+
+#alias {palette}
+{
+	#class {$mods[filenames][palette]} {open};
+	#foreach {${levels}} {c1}
+	{
+		#foreach {${levels}} {c2}
+		{
+			#foreach {${levels}} {c3}
+			{
+				#var {buildstring} {${buildstring} <$c1$c2$c3>$c1$c2$c3}
+			};
+			#showme {${buildstring}};
+			#var {buildstring} {}
+		}
+	};
+	#class {$mods[filenames][palette]} {close};
+}

@@ -1,0 +1,14 @@
+#!/bin/bash
+export TTCHAR="TestCharacter"
+export TTPASS="TestPassword"
+export TTSESS="AR"
+export TTSITE="realms.reichel.net"
+export TTPORT="5000"
+
+# be sure to change this path to suit your needs.
+# tt++ MUST be invoked in the same directory as
+# bootstrap.tt in order for the system to work.
+
+cd ~/abysmal
+
+tt++ bootstrap.tt

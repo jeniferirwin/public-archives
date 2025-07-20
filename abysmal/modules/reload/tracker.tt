@@ -1,0 +1,128 @@
+#var {mods[filenames][tracker]} {tracker.tt};
+#var {tracker[hpcur]} {0}
+#var {tracker[hpold]} {0}
+#var {tracker[manacur]} {0}
+#var {tracker[manaold]} {0}
+#var {tracker[mvcur]} {0}
+#var {tracker[mvold]} {0}
+
+#var {tracker[fullcur]} {0}
+#var {tracker[fullold]} {0}
+#var {tracker[poscur]} {}
+#var {tracker[posold]} {}
+
+#var {tracker[seconds]} {3}
+#var {tracker[rounds]} {1}
+#var {tracker[dead]} {0}
+
+#alias {trackerupdate}
+{
+  #class {$mods[filenames][tracker]} {open};
+  #format {tracker[hpold]} {%p} {$tracker[hpcur]};
+  #format {tracker[manaold]} {%p} {$tracker[manacur]};
+  #format {tracker[mvold]} {%p} {$tracker[mvcur]};
+  #format {tracker[fullold]} {%p} {$tracker[fullcur]};
+  #format {tracker[posold]} {%p} {$tracker[poscur]};
+
+  #format {tracker[hpcur]} {%p} {$prompt[raw][hpcur]};
+  #format {tracker[manacur]} {%p} {$prompt[raw][manacur]};
+  #format {tracker[mvcur]} {%p} {$prompt[raw][mvcur]};
+  #format {tracker[fullcur]} {%p} {$prompt[raw][full]};
+  #format {tracker[poscur]} {%p} {$prompt[raw][position]};
+
+  dochecks;
+  #class {$mods[filenames][tracker]} {close};
+}
+
+#alias {dochecks}
+{
+  #class {$mods[filenames][tracker]} {open};
+  #if {${tracker[fullold]} > ${tracker[fullcur]}}
+  {
+    tick;
+  };
+  #if {"${tracker[poscur]}" == "fighting" && "${tracker[posold]}" == "standing"}
+  {
+    #showme {<110>*** COMBAT STARTED ***<000>};
+    startcombat;
+  };
+  #if {"${tracker[poscur]}" == "standing" && "${tracker[posold]}" == "fighting"}
+  {
+    #showme {<110>*** COMBAT ENDED ***<000>};
+  };
+  #class {$mods[filenames][tracker]} {close};
+}
+
+#alias {tick}
+{
+  #class {$mods[filenames][tracker]} {open};
+  #showme {<faa>[-- TICK --]};
+  #delay {55}
+  {
+    #showme {<adf>[-- tick soon... --]};
+  };
+  #class {$mods[filenames][tracker]} {close};
+}
+
+#alias {startcombat}
+{
+  #class {$mods[filenames][tracker]} {open};
+  #var {tracker[seconds]} {3};
+  #var {tracker[fighting]} {1};
+  #var {tracker[dead]} {0};
+  #ticker {tracker} {combatloop} {3};
+  #class {$mods[filenames][tracker]} {close};
+}
+
+#alias {combatloop}
+{
+  #class {$mods[filenames][tracker]} {open};
+  #if {"${tracker[poscur]}" == "fighting"}
+  {
+    #math {tracker[seconds]} {${tracker[seconds]} + 3};
+    #math {tracker[rounds]} {${tracker[seconds]} / 3};
+    #showme {Rounds so far:  ${tracker[rounds]} (${tracker[seconds]} sec)};
+  }
+  {
+    stopcombat;
+  };
+  #class {$mods[filenames][tracker]} {close};
+}
+
+#alias {stopcombat}
+{
+  #class {$mods[filenames][tracker]} {open};
+  #unticker {tracker};
+  #var {tracker[dead]} {1};
+  #class {$mods[filenames][tracker]} {close};
+}
+
+#action {is DEAD}
+{
+  stopcombat
+}
+
+#action {You receive %1 exp.}
+{
+  #class {$mods[filenames][tracker]} {open};
+  #if {${tracker[dead]} == 1}
+  {
+    #format {tracker[exp]} {%p} {%1};
+    #math {tracker[persec]} {${tracker[exp]}.0 / ${tracker[seconds]}.0};
+    #math {tracker[perround]} {${tracker[exp]}.0 / ${tracker[rounds]}.0};
+    #var {tracker[output]} {$tracker[exp] EXP, $tracker[rounds] ROUNDS, $tracker[seconds] SEC, ${tracker[perround]} EXP/ROUND, ${tracker[persec]} EXP/SEC};
+    #showme {$tracker[output]};
+    #system {echo $tracker[output] >> data/expdata.txt};
+    #var {tracker[dead]} {0};
+  };
+  #class {$mods[filenames][tracker]} {close};
+}
+
+#action {You flee}
+{
+  #class {$mods[filenames][tracker]} {open};
+  stopcombat;
+  #var {tracker[seconds]} {0};
+  #var {tracker[dead]} {0};
+  #class {$mods[filenames][tracker]} {close};
+}

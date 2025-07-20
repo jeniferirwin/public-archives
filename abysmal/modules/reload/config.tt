@@ -1,0 +1,16 @@
+#config {buffer size} {10000};
+#config {charset} {UTF-8};
+#config {command color} {\e[0;37m};
+#config {command echo} {off};
+#config {history size} {1000};
+#config {log mode} {raw};
+#config {packet patch} {0.1};
+#config {repeat enter} {on};
+#config {screen reader} {off};
+#config {scroll lock} {on};
+#config {tab width} {8};
+#config {tintin char} {#};
+#config {speedwalk} {on};
+#config {verbatim} {off};
+#config {verbose} {off};
+#config {wordwrap} {off};

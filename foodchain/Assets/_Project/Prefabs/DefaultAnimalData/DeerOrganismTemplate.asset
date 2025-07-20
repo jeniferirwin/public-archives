@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2acafce2cf4a64b419177a2edadece14, type: 3}
+  m_Name: DeerOrganismTemplate
+  m_EditorClassIdentifier: 
+  energyPercentValue: 0.4
+  phaseLengths:
+  - 10
+  - 30
+  - 10
+  phaseScales:
+  - {x: 0.4, y: 0.4, z: 0.4}
+  - {x: 1, y: 1, z: 1}
+  - {x: 1.2, y: 1.2, z: 1.2}
+  phaseMaterials:
+  - {fileID: 2100000, guid: 145e0ca1ff5c2db4698469039004f144, type: 2}
+  - {fileID: 2100000, guid: 2146100c2d1ceaf48beb6e139df2c7be, type: 2}
+  - {fileID: 2100000, guid: e6e7daf83bece264ca0dd132cc4be655, type: 2}
+  mainColorSlot: 0

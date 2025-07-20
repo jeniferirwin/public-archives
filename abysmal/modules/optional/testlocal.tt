@@ -1,0 +1,36 @@
+#var {mods[filenames][testlocal]} {testlocal.tt};
+
+#nop {
+    Small demo of how the #local command can be used
+    with other commands like #list and #math.
+};
+
+#alias {testlocal}
+{
+    #class {mods[filenames][testlocal]} {open};
+    
+    #nop {
+        Based on my testing, the second set of empty braces MUST be included,
+        even if you don't want to initially assign anything to the variable.
+        If you don't include the braces, the variable won't stay local.
+    };
+
+    #local {testlist} {};
+    #local {testmath} {};
+    #local {testformat} {};
+    
+    #list {testlist} {add} {testone};
+    #list {testlist} {add} {testtwo};
+    #math {testmath} {2 + 2};
+    #format {testformat} {%u} {case};
+
+    #echo {$testlist[2]};
+    #echo {$testformat};
+    #echo {$testmath};
+
+    #nop {
+        After this alias finishes, the $testlist, $testformat
+        and $testmath variables will be gone.
+    };
+    #class {mods[filenames][testlocal]} {close};
+}

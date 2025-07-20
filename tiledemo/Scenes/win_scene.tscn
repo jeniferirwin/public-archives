@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://dky0fpjw44wmo"]
+
+[node name="WinScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RestartButton" type="Button" parent="."]
+layout_mode = 2
+offset_left = 684.0
+offset_top = 601.0
+offset_right = 978.0
+offset_bottom = 691.0
+theme_override_font_sizes/font_size = 25
+text = "Return to Main Menu"
+
+[node name="YouWonLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 485.0
+offset_top = 243.0
+offset_right = 1173.0
+offset_bottom = 586.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 14
+theme_override_font_sizes/font_size = 100
+text = "You won!"
+horizontal_alignment = 1

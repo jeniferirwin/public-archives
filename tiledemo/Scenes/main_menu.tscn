@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://4snn3qmuhefl"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Instructions" type="Label" parent="."]
+layout_mode = 0
+offset_left = 141.0
+offset_top = 39.0
+offset_right = 1440.0
+offset_bottom = 738.0
+theme_override_font_sizes/font_size = 21
+text = "Demo Game
+WASD to scroll the camera
+Click resources to harvest them (you can just hold the mouse button and flail it around)
+H - builds house (requires 5 wood)
+F - builds forge (requires 10 stone)
+T - builds tools (requires 1 stone and at least 1 house)
+U - builds statue (requires 20 bars)
+
+For every house you have, 1 meat will be consumed every 2 seconds.
+1 wood + 1 iron = 1 bar, as long as at least 1 house and 1 forge are present.
+For every additional house + forge combo you have, 1 more bar will be smelted
+per tick, as long as materials are available.
+
+For example, 34 houses and 86 forges can smelt up to 34 bars per tick, given materials.
+86 houses and 86 forges would smelt up to 86 bars.
+
+Houses and tools collectively grant 'harvest power' which makes you harvest more from nodes. As with
+smelting, this is capped with the lower of the two values. 500 tools and 20 houses will only do the work
+of 20 tools and 20 houses.
+
+Build 10 statues to win!"
+
+[node name="StartButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 721.0
+offset_top = 755.0
+offset_right = 915.0
+offset_bottom = 867.0
+theme_override_font_sizes/font_size = 50
+text = "Start"
+
+[node name="Camera" type="Camera2D" parent="."]
+offset = Vector2(800, 450)

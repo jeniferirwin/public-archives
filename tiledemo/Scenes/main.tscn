@@ -1,0 +1,85 @@
+[gd_scene load_steps=7 format=3 uid="uid://j6m65dslurt8"]
+
+[ext_resource type="Texture2D" uid="uid://b7n6b8ktk0ttn" path="res://Textures/demo_tiles.png" id="1_jjgbg"]
+[ext_resource type="Script" uid="uid://c6q1tn5sa6h15" path="res://Scripts/terrain.gd" id="2_bo1nx"]
+[ext_resource type="Script" uid="uid://b8lspb4l0hvnf" path="res://Scripts/resource_ui.gd" id="3_8gbba"]
+[ext_resource type="Script" uid="uid://crxhm7f7cbqr7" path="res://Scripts/camera.gd" id="3_jjvhh"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bo1nx"]
+texture = ExtResource("1_jjgbg")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_8gbba"]
+sources/1 = SubResource("TileSetAtlasSource_bo1nx")
+
+[node name="Scene" type="Node2D"]
+
+[node name="Tiles" type="TileMapLayer" parent="."]
+tile_set = SubResource("TileSet_8gbba")
+script = ExtResource("2_bo1nx")
+
+[node name="Camera" type="Camera2D" parent="."]
+zoom = Vector2(3, 3)
+script = ExtResource("3_jjvhh")
+
+[node name="UI" type="GridContainer" parent="Camera"]
+offset_left = -260.0
+offset_top = -144.0
+offset_right = -107.0
+offset_bottom = 120.0
+
+[node name="Deer" type="Label" parent="Camera/UI"]
+layout_mode = 2
+text = "Deer:"
+script = ExtResource("3_8gbba")
+
+[node name="Wood" type="Label" parent="Camera/UI"]
+layout_mode = 2
+text = "Wood: "
+script = ExtResource("3_8gbba")
+
+[node name="Stone" type="Label" parent="Camera/UI"]
+layout_mode = 2
+text = "Stone: "
+script = ExtResource("3_8gbba")
+
+[node name="Iron" type="Label" parent="Camera/UI"]
+layout_mode = 2
+text = "Iron: "
+script = ExtResource("3_8gbba")
+
+[node name="House" type="Label" parent="Camera/UI"]
+layout_mode = 2
+text = "Houses: "
+script = ExtResource("3_8gbba")
+
+[node name="Smelter" type="Label" parent="Camera/UI"]
+layout_mode = 2
+text = "Smelters: "
+script = ExtResource("3_8gbba")
+
+[node name="Statue" type="Label" parent="Camera/UI"]
+layout_mode = 2
+text = "Statues: "
+script = ExtResource("3_8gbba")
+
+[node name="Tools" type="Label" parent="Camera/UI"]
+layout_mode = 2
+text = "Tools: "
+script = ExtResource("3_8gbba")
+
+[node name="Bars" type="Label" parent="Camera/UI"]
+layout_mode = 2
+text = "Bars: "
+script = ExtResource("3_8gbba")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true

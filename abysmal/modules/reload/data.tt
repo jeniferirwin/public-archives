@@ -1,0 +1,341 @@
+#var {mods[filenames][data]} {data.tt}
+#var {data[damage_enum]} {{1}{scratches}{2}{grazes}{3}{hits}{4}{injures}{5}{wounds}{6}{mauls}{7}{decimates}{8}{devastates}{9}{maims}{10}{MUTILATES}{11}{DISEMBOWELS}{12}{DISMEMBERS}{13}{MASSACRES}{14}{MANGLES}{15}{DEMOLISHES}{16}{DEVASTATES}{17}{OBLITERATES}{18}{ANNIHILATES}{19}{ERADICATES}{20}{UNKIND}{21}{UNSPEAKABLE}};
+#var {data[misses_enum]} {{1}{amuses}{2}{widely}{3}{evenly}{4}{closely}{5}{just}{6}{barely}};
+
+#nop {
+    This is a ticker to keep the test character logged on. It is possible to
+    actually idle out of extremely long fights if this isn't used!
+    
+    See 'spamprotection.tt' to see what @keepaliveCommand is doing.
+    If you don't want this file to depend on spamprotection.tt, either
+    move @keepaliveCommand into this file or simply remove this ticker.
+};
+
+#ticker {keepalive} {@keepaliveCommand{}} {100};
+#gag {Pardon?};
+
+
+#nop {
+    The below two aliases are more or less identical, except that
+    'start' begins by requesting a specific dummy from Jarvis (look
+    at Jarvis in room 27200 to check out his services). Modify the
+    level of the dummy as you need and then type 'reload'.
+};
+
+#alias {start}
+{
+    say level 40 dummy;
+    #class {$mods[filenames][data]} {open};
+    #format {battle[time_start]} {%T};
+    #var {battle[allmiss]} {0};
+    #var {battle[allavoid]} {0};
+    #var {battle[swings]} {0};
+    #var {battle[hits]} {};
+    #var {battle[misses]} {};
+    #var {battle[avoids]} {};
+    #var {battle[fail]} {0};
+    #class {$mods[filenames][data]} {close};
+    #send {kill dummy};
+};
+
+#alias {k %1}
+{
+    #class {$mods[filenames][data]} {open};
+    #format {battle[time_start]} {%T};
+    #var {battle[allmiss]} {0};
+    #var {battle[allavoid]} {0};
+    #var {battle[swings]} {0};
+    #var {battle[hits]} {};
+    #var {battle[misses]} {};
+    #var {battle[avoids]} {};
+    #var {battle[fail]} {0};
+    #class {$mods[filenames][data]} {close};
+    #send {kill %1};
+}
+
+#action {Your {hit|stab|whip|blast|crush|bite|suction|digestion|slap|wrath|divine power|scratch|peck|sting|shocking bite|freezing bite|chomp|thrust|shock|flame|kiss|stones|arrow|poisonous bite|slice|slash|claw|pound|grep|pierce|beating|charge|punch|magic|cleave|chop|smash|flaming bite|acidic bite|life drain|slime|thwack|chill|trample|shot|bolt} %1 level %2 test dummy{!|.}}
+{
+    #class {$mods[filenames][data]} {open};
+    #local {foo} {@interpret_dam_msg{%1}};
+    #math {battle[$result[type]][$result[severity]]} {$battle[$result[type]][$result[severity]] + 1};
+    #math {battle[swings]} {$battle[swings] + 1};
+    #if {"$result[type]" == "misses"}
+    {
+        #echo {Registering failed (<010>missed<070>) swing.};
+        #math {battle[fail]} {$battle[fail] + 1};
+        #math {battle[allmiss]} {$battle[allmiss] + 1};
+    }
+    {
+        #echo {Registering <120>successful<070> swing.};
+        #math {battle[success]} {$battle[success] + 1};
+    };
+    #unvar {result};
+    #class {$mods[filenames][data]} {close};
+}
+
+#action {*** COMBAT ENDED ***} {processbattle};
+
+#nop {
+    This is a leaning tower of duct tape. Comprehend at your own risk.
+    To put a long story short, it calculates out all the stats from the
+    most recent battle and then prints them out in a nice little card.
+    
+    Battle data is also output to data/battles.txt near the end of the alias,
+    though it is output with tintin color codes included. I have included
+    a shell script in the data folder, 'readbattles.sh,' that will display
+    a stripped version of the file.
+};
+
+#alias {processbattle}
+{
+    #class {$mods[filenames][data]} {open};
+    
+    #local {output} {};
+    #local {lines} {};
+    #list {lines} {clear};
+    #format {battle[time_end]} {%T};
+    #math {output[total_time]} {$battle[time_end] - $battle[time_start]};
+    #math {output[total_rounds]} {$output[total_time] / 3};
+    
+    #format {output[fSwings]} {%f} {$battle[swings]};
+    #format {output[fSuccess]} {%f} {$battle[success]};
+    #format {output[fAvoid]} {%f} {$battle[allavoid]};
+    #format {output[fMiss]} {%f} {$battle[allmiss]};
+
+    #math {output[pctConnected]} {$output[fSuccess] / $output[fSwings]};
+    #math {output[pctAvoided]} {$output[fAvoid] / $output[fSwings]};
+    #math {output[pctMissed]} {$output[fMiss] / $output[fSwings]};
+    
+    #math {output[fmtConnected]} {$output[pctConnected] * 100};
+    #math {output[fmtAvoided]} {$output[pctAvoided] * 100};
+    #math {output[fmtMissed]} {$output[pctMissed] * 100};
+
+    #format {output[fmtConnected]} {%.4s} {$output[fmtConnected]};
+    #format {output[fmtAvoided]} {%.4s} {$output[fmtAvoided]};
+    #format {output[fmtMissed]} {%.4s} {$output[fmtMissed]};
+
+    #local {timeoutput}
+    {
+        @pad{
+            {77}
+            {<020>## <070>TIME: $output[total_time] sec, $output[total_rounds] rounds}
+            {2}
+        }<020>##
+    };
+    
+    #local {swingsoutput}
+    {
+        @pad{
+            {77}
+            {<020>## <070>Total swings: $battle[swings] | Successful: $battle[success] | Failed: $battle[fail] ($battle[allmiss] missed, $battle[allavoid] avoided)}
+            {2}
+        }<020>##
+    };
+    
+
+    #local {missedOutput}
+    {
+        @pad{
+            {77}
+            {<020>## $output[fmtConnected]%% <070>of swings landed. <030>$output[fmtAvoided]%% <070>were avoided. <010>$output[fmtMissed]%% <070>missed.}
+            {6}
+        }<020>##
+    };
+
+    #list {lines} {add} {<020>################################### <120>BATTLE <020>#################################### <070>};
+    #list {lines} {add} {$timeoutput};
+    #list {lines} {add} {$swingsoutput};
+    #list {lines} {add} {$missedOutput};
+    
+    #local {stringAvoids} {<020>##};
+    #local {avoidsFound} {0};
+    
+    #if {$battle[avoids][parries] != {}}
+    {
+        #math {avoidsFound} {$avoidsFound + 1};
+        #local {stringAvoids} {$stringAvoids <030>Parries: <070>$battle[avoids][parries]};
+    };
+
+    #if {$battle[avoids][dodges] != {}}
+    {
+        #math {avoidsFound} {$avoidsFound + 1};
+        #local {stringAvoids} {$stringAvoids <030>Dodges: <070>$battle[avoids][dodges]};
+    };
+
+    #if {$battle[avoids][fades] != {}}
+    {
+        #math {avoidsFound} {$avoidsFound + 1};
+        #local {stringAvoids} {$stringAvoids <030>Fades: <070>$battle[avoids][fades]};
+    };
+
+    #if {$battle[avoids][blocks] != {}}
+    {
+        #math {avoidsFound} {$avoidsFound + 1};
+        #local {stringAvoids} {$stringAvoids <030>Blocks: <070>$battle[avoids][blocks]};
+    };
+
+    #if {$avoidsFound >= 1}
+    {
+        #format {stringAvoids} {%p} {$stringAvoids};
+        #math {avoidCodes} {1 + $avoidsFound * 2};
+        #local {stringAvoids} {@pad{{77}{$stringAvoids}{$avoidCodes}}<020>##};
+        #unvar {avoidCodes};
+        #list {lines} {add} {$stringAvoids};
+    };
+
+    #if {"$battle[misses]" != ""}
+    {
+        #list {lines} {add} {<020>################################### <120>MISSES <020>####################################<070>};
+    };
+
+    #foreach {$data[misses_enum]} {output[loop]}
+    {
+        #if {$battle[misses][$output[loop]] != {}}
+        {
+            #local {newMiss} {@pad{{77}{<020>## <070>$output[loop]: $battle[misses][$output[loop]]}{2}}<020>##};
+            #list {lines} {add} {$newMiss};
+        }
+    };
+
+
+    #list {lines} {add} {<020>################################### <120>DAMAGE <020>####################################<070>};
+    
+    #foreach {$data[damage_enum]} {output[loop]}
+    {
+        #if {$battle[hits][$output[loop]] != {}}
+        {
+            #local {newHit} {@pad{{77}{<020>## <070>$output[loop]: $battle[hits][$output[loop]]}{2}}<020>##};
+            #list {lines} {add} {$newHit};
+        };
+    };
+
+    #list {lines} {add} {<020>#################################### <120>END <020>###################################### <070>};
+    #list {lines} {size} {output[lines_size]};
+    #loop {1} {$output[lines_size]} {output[loop]}
+    {
+        #list {lines} {get} {$output[loop]} {output[line]};
+        #echo {$output[line]};
+        #system {echo "$output[line]" >> data/battles.txt};
+    };
+    #unvar {battle};
+    #unvar {result};
+    #class {$mods[filenames][data]} {close};
+}
+
+#action {fades around your attack.}
+{
+    #class {$mods[filenames][data]} {open};
+    #echo {Registering failed (<030>avoided<070>) swing.};
+    #math {battle[avoids][fades]} {$battle[avoids][fades] + 1};
+    #math {battle[swings]} {$battle[swings] + 1};
+    #math {battle[fail]} {$battle[fail] + 1};
+    #math {battle[allavoid]} {$battle[allavoid] + 1};
+    #class {$mods[filenames][data]} {close};
+}
+
+#action {blocks your attack with a shield.}
+{
+    #class {$mods[filenames][data]} {open};
+    #echo {Registering failed (<030>avoided<070>) swing.};
+    #math {battle[avoids][blocks]} {$battle[avoids][blocks] + 1};
+    #math {battle[swings]} {$battle[swings] + 1};
+    #math {battle[fail]} {$battle[fail] + 1};
+    #math {battle[allavoid]} {$battle[allavoid] + 1};
+    #class {$mods[filenames][data]} {close};
+}
+
+
+#action {dodges your attack.}
+{
+    #class {$mods[filenames][data]} {open};
+    #echo {Registering failed (<030>avoided<070>) swing.};
+    #math {battle[avoids][dodges]} {$battle[avoids][dodges] + 1};
+    #math {battle[swings]} {$battle[swings] + 1};
+    #math {battle[fail]} {$battle[fail] + 1};
+    #math {battle[allavoid]} {$battle[allavoid] + 1};
+    #class {$mods[filenames][data]} {close};
+}
+
+#action {parries your attack.}
+{
+    #class {$mods[filenames][data]} {open};
+    #echo {Registering failed (<030>avoided<070>) swing.};
+    #math {battle[avoids][parries]} {$battle[avoids][parries] + 1};
+    #math {battle[swings]} {$battle[swings] + 1};
+    #math {battle[fail]} {$battle[fail] + 1};
+    #math {battle[allavoid]} {$battle[allavoid] + 1};
+    #class {$mods[filenames][data]} {close};
+}
+
+
+
+#function {interpret_dam_msg}
+{
+    #class {$mods[filenames][data]} {open};
+    #switch {"%1"}
+    {
+        #local {severity} {%1};
+        #local {type} {hits};
+
+        #case {"scratches"}           {#local {severity} {scratches}};
+        #case {"grazes"}              {#local {severity} {grazes}};
+        #case {"hits"}                {#local {severity} {hits}};
+        #case {"injures"}             {#local {severity} {injures}};
+        #case {"wounds"}              {#local {severity} {wounds}};
+        #case {"mauls"}               {#local {severity} {mauls}};
+        #case {"decimates"}           {#local {severity} {decimates}};
+        #case {"devastates"}          {#local {severity} {devastates}};
+        #case {"maims"}               {#local {severity} {maims}};
+        #case {"MUTILATES"}           {#local {severity} {MUTILATES}};
+        #case {"DISEMBOWELS"}         {#local {severity} {DISEMBOWELS}};
+        #case {"DISMEMBERS"}          {#local {severity} {DISMEMBERS}};
+        #case {"MASSACRES"}           {#local {severity} {MASSACRES}};
+        #case {"MANGLES"}             {#local {severity} {MANGLES}};
+        #case {"*** DEMOLISHES ***"}  {#local {severity} {DEMOLISHES};};
+        #case {"*** DEVASTATES ***"}  {#local {severity} {DEVASTATES};};
+        #case {"=== OBLITERATES ==="} {#local {severity} {OBLITERATES};};
+        #case {">>> ANNIHILATES <<<"} {#local {severity} {ANNIHILATES};};
+        #case {"<<< ERADICATES >>>"}  {#local {severity} {ERADICATES};};
+
+        #case {"does really UNKIND things to"}
+        {#local {severity} {UNKIND};};
+
+        #case {does ...UNSPEAKABLE... things to}
+        {#local {severity} {UNSPEAKABLE};};
+
+        #case {"barely misses"}
+        {
+            #local {severity} {barely};
+            #local {type} {misses};
+        };
+        #case {"just misses"}
+        {
+            #local {severity} {just};
+            #local {type} {misses};
+        };
+        #case {"misses"}
+        {
+            #local {severity} {evenly};
+            #local {type} {misses};
+        };
+        #case {"closely misses"}
+        {
+            #local {severity} {closely};
+            #local {type} {misses};
+        };
+        #case {"widely misses"}
+        {
+            #local {severity} {widely};
+            #local {type} {misses};
+        };
+        #case {"amuses"}
+        {
+            #local {severity} {amuses};
+            #local {type} {misses};
+        };
+        #default {#showme {UNHANDLED: %1}};
+    };
+    #var {result} {{severity}{$severity}{type}{$type}};
+    #class {$mods[filenames][data]} {close};
+    #return $result;
+};

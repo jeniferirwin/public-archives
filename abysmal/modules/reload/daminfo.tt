@@ -1,0 +1,74 @@
+#var {mods[filenames][daminfo]} {daminfo.tt};
+
+#list {damverb[strings]} {add} {\e[0\;31mscratches\e[0\;37m}
+#list {damverb[strings]} {add} {\e[0\;31mgrazes\e[0\;37m}
+#list {damverb[strings]} {add} {\e[0\;31mhits\e[0\;37m}
+#list {damverb[strings]} {add} {\e[0\;31minjures\e[0\;37m}
+#list {damverb[strings]} {add} {\e[0\;31mwounds\e[0\;37m}
+#list {damverb[strings]} {add} {\e[0\;31mmauls\e[0\;37m}
+#list {damverb[strings]} {add} {\e[0\;31mdecimates\e[0\;37m}
+#list {damverb[strings]} {add} {\e[0\;31mdevastates\e[0\;37m}
+#list {damverb[strings]} {add} {\e[0\;31mmaims\e[0\;37m}
+#list {damverb[strings]} {add} {\e[0\;31mMUTILATES\e[0\;37m}
+#list {damverb[strings]} {add} {\e[0\;31mDISEMBOWELS\e[0\;37m}
+#list {damverb[strings]} {add} {\e[0\;31mDISMEMBERS\e[0\;37m}
+#list {damverb[strings]} {add} {\e[0\;31mMASSACRES\e[0\;37m}
+#list {damverb[strings]} {add} {\e[0\;31mMANGLES\e[0\;37m}
+#list {damverb[strings]} {add} {*** \e[0\;31mDEV\e[1\;31mAST\e[0\;31mATES\e[0\;37m ***}
+#list {damverb[strings]} {add} {*** \e[1\;37mDEMOLISHES\e[0\;37m ***}
+#list {damverb[strings]} {add} {=== \e[0\;35mOBLITERATES\e[0\;37m ===}
+#list {damverb[strings]} {add} {>>> \e[1\;34mANNIHILATES\e[0\;37m <<<}
+#list {damverb[strings]} {add} {<<< \e[1\;33mERADICATES\e[0\;37m >>>}
+#list {damverb[strings]} {add} {does really \e[1\;30mUNKIND\e[0\;37m things to}
+#list {damverb[strings]} {add} {does ...\e[1\;30mUNSPEAKABLE\e[0\;37m... things to}
+
+#list {damverb[amounts]} {add} {1-4}
+#list {damverb[amounts]} {add} {5-8}
+#list {damverb[amounts]} {add} {9-12}
+#list {damverb[amounts]} {add} {13-16}
+#list {damverb[amounts]} {add} {17-20}
+#list {damverb[amounts]} {add} {21-24}
+#list {damverb[amounts]} {add} {25-28}
+#list {damverb[amounts]} {add} {29-32}
+#list {damverb[amounts]} {add} {33-36}
+#list {damverb[amounts]} {add} {37-40}
+#list {damverb[amounts]} {add} {41-44}
+#list {damverb[amounts]} {add} {45-48}
+#list {damverb[amounts]} {add} {49-52}
+#list {damverb[amounts]} {add} {53-56}
+#list {damverb[amounts]} {add} {57-60}
+#list {damverb[amounts]} {add} {61-75}
+#list {damverb[amounts]} {add} {76-100}
+#list {damverb[amounts]} {add} {101-125}
+#list {damverb[amounts]} {add} {126-150}
+#list {damverb[amounts]} {add} {151-300}
+#list {damverb[amounts]} {add} {300+}
+
+#list {damverb[strings]} {size} {damSize}
+
+#loop {1} {$damSize} {i}
+{
+  #class {$mods[filenames][daminfo]} {open};
+  #var {original} {~%1$damverb[strings][$i]%2};
+  #var {replacement} {%1$damverb[strings][$i]%2 <110>($damverb[amounts][$i])<070>};
+  #var {cmd} {#substitute {$original} {$replacement}};
+  $cmd;
+  #class {$mods[filenames][daminfo]} {close};
+}
+
+#class {$mods[filenames][daminfo]} {open};
+#sub {^%1 is in perfect condition.} {%1 is in perfect condition. (100%)}
+#sub {^%1 has a few scratches.} {%1 has a few scratches. (90-99%)}
+#sub {^%1 has some small wounds and bruises.} {%1 has some small wounds and bruises. (75-89%)}
+#sub {^%1 has quite a few wounds.} {%1 has quite a few wounds. (50-74%)}
+#sub {^%1 has some big nasty wounds and scratches.} {%1 has some big nasty wounds and scratches. (30-49%)}
+#sub {^%1 looks pretty hurt.} {%1 looks pretty hurt. (15-29%)}
+#sub {^%1 is in awful condition.} {%1 is in awful condition. (1-14%)}
+#class {$mods[filenames][daminfo]} {close};
+
+#unvar {damverb}
+#unvar {damSize}
+#unvar {i}
+#unvar {cmd}
+#unvar {original}
+#unvar {replacement}

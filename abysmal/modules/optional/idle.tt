@@ -1,0 +1,18 @@
+#var {mods[filenames][idle]} {idle.tt}
+
+#event {SENT OUTPUT}
+{
+    #format {idle[lastcmd]} {%T};
+    #undelay {smartkeepalive};
+    #delay {smartkeepalive} {unidle} {600};
+}
+
+#alias {unidle}
+{
+    #format {idle[curtime]} {%T};
+    #math {idle[delta]} {$idle[curtime] - $idle[lastcmd]};
+    #if {$idle[delta] > 5}
+    {
+        @keepaliveCommand{};
+    }
+}
